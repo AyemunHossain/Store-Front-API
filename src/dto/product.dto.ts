@@ -14,11 +14,25 @@ import {
 import { Type } from 'class-transformer';
 import { PaginationDto } from './pagination.dto';
 
-export class AddCarDto {
+export class AddProductDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  carName: string;
+  Name: string;
+
+  @IsOptional()
+  admin: any;
+
+  @IsOptional()
+  user:any;
+
+  @IsOptional()
+  merchant: any;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  productType: string;
 
   @IsOptional()
   @IsNumber()
@@ -30,7 +44,7 @@ export class AddCarDto {
 
   @IsOptional()
   @IsNumber()
-  carMileage: number;
+  Mileage: number;
 
   @IsOptional()
   @IsNotEmpty()
@@ -95,7 +109,7 @@ export class AddCarDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  carStatus: string;
+  Status: string;
 
   @IsOptional()
   @IsNotEmpty()
@@ -139,44 +153,41 @@ export class AddCarDto {
   interiorColor: any;
 
   @IsOptional()
-  carBackLight: any;
+  BackLight: any;
 
   @IsOptional()
-  carBodyType: any;
+  BodyType: any;
 
   @IsOptional()
-  carBrake: any;
+  Brake: any;
 
   @IsOptional()
-  carEngine: any;
+  Engine: any;
 
   @IsOptional()
   @IsArray()
-  carFeatures: any[];
+  Features: any[];
 
   @IsOptional()
-  carFuel: any;
+  Fuel: any;
 
   @IsOptional()
-  carHeadLight: any;
+  HeadLight: any;
 
   @IsOptional()
-  carLocation: any;
+  Location: any;
 
   @IsOptional()
-  carManufacturer: any;
+  Manufacturer: any;
 
   @IsOptional()
-  carSeats: any;
+  Seats: any;
 
   @IsOptional()
-  carSuspension: any;
+  Suspension: any;
 
   @IsOptional()
-  carType: any;
-
-  @IsOptional()
-  user: any;
+  Type: any;
 
   @IsOptional()
   modelName: any;
@@ -194,7 +205,7 @@ export class AddCarDto {
 
   @IsOptional()
   @IsNotEmpty()
-  modelCar: boolean;
+  modelProduct: boolean;
 
   @IsOptional()
   @IsNumber()
@@ -225,25 +236,25 @@ export class AddCarDto {
   success: boolean;
 
   @IsOptional()
-  carCity: any
+  City: any
 }
 
-export class FilterCarDto {
+export class FilterProductDto {
 
 
 
   @IsOptional()
   @IsString()
-  carName: string;
+  Name: string;
 }
 
-export class OptionCarDto {
+export class OptionProductDto {
   @IsOptional()
   @IsBoolean()
   deleteMany: boolean;
 }
 
-export class UpdateCarDto {
+export class UpdateProductDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
@@ -252,9 +263,23 @@ export class UpdateCarDto {
   ids: string[];
 
   @IsOptional()
+  admin: any;
+
+  @IsOptional()
+  user:any;
+
+  @IsOptional()
+  merchant: any;
+
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
-  carName: string;
+  productType: string;
+  
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  Name: string;
 
   @IsOptional()
   @IsNumber()
@@ -266,7 +291,7 @@ export class UpdateCarDto {
 
   @IsOptional()
   @IsNumber()
-  carMileage: number;
+  Mileage: number;
 
   @IsOptional()
   @IsNotEmpty()
@@ -331,7 +356,7 @@ export class UpdateCarDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  carStatus: string;
+  Status: string;
 
   @IsOptional()
   @IsNotEmpty()
@@ -375,45 +400,42 @@ export class UpdateCarDto {
   interiorColor: any;
 
   @IsOptional()
-  carBackLight: any;
+  BackLight: any;
 
   @IsOptional()
-  carBodyType: any;
+  BodyType: any;
 
   @IsOptional()
-  carBrake: any;
+  Brake: any;
 
   @IsOptional()
-  carEngine: any;
+  Engine: any;
 
   @IsOptional()
   @IsArray()
-  carFeatures: any[];
+  Features: any[];
 
   @IsOptional()
-  carFuel: any;
+  Fuel: any;
 
   @IsOptional()
-  carHeadLight: any;
+  HeadLight: any;
 
   @IsOptional()
-  carLocation: any;
+  Location: any;
 
   @IsOptional()
-  carManufacturer: any;
+  Manufacturer: any;
 
   @IsOptional()
-  carSeats: any;
+  Seats: any;
 
   @IsOptional()
-  carSuspension: any;
+  Suspension: any;
 
   @IsOptional()
-  carType: any;
-
-  @IsOptional()
-  user: any;
-
+  Type: any;
+  
   @IsOptional()
   modelName: any;
 
@@ -430,7 +452,7 @@ export class UpdateCarDto {
 
   @IsOptional()
   @IsNotEmpty()
-  modelCar: boolean;
+  modelProduct: boolean;
 
   @IsOptional()
   @IsNumber()
@@ -461,16 +483,16 @@ export class UpdateCarDto {
   success: boolean;
 
   @IsOptional()
-  carCity: any
+  City: any
 }
 
-export class FilterAndPaginationCarDto {
+export class FilterAndPaginationProductDto {
   @IsOptional()
   @IsNotEmptyObject()
   @IsObject()
   @ValidateNested()
-  @Type(() => FilterCarDto)
-  filter: FilterCarDto;
+  @Type(() => FilterProductDto)
+  filter: FilterProductDto;
 
   @IsOptional()
   @IsNotEmptyObject()

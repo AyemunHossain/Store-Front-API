@@ -1,9 +1,8 @@
-import { CarType } from './../interfaces/carType.interface';
-import { CarBodyType } from './../interfaces/carBodyType.interface';
-import { models, model, Schema } from 'mongoose';
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-
-const schema = new Schema<CarType>({
+export const CarTypeSchema = new mongoose.Schema(
+  {
   car_type: {
     type: String,
     required: true
@@ -12,7 +11,3 @@ const schema = new Schema<CarType>({
   {
     timestamps: true
   })
-
-
-const carsapp_cartypes = models.carsapp_cartypes || model<CarType>("carsapp_cartypes", schema)
-export default carsapp_cartypes;

@@ -1,8 +1,7 @@
-import { CarBreaks } from '../interfaces/carBreaks.interface';
-import { model, models, Schema } from 'mongoose';
-import { CarLocation } from '../interfaces/carLocations.interface';
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-const schema = new Schema <CarLocation>(
+export const CarLocationSchema = new mongoose.Schema(
     {
         city_id: {
           type: String,
@@ -17,6 +16,3 @@ const schema = new Schema <CarLocation>(
           timestamps: true
       }
 )
-
-const carsapp_carlocations = models.carsapp_carlocations || model<CarLocation>('carsapp_carlocations', schema);
-export default carsapp_carlocations;

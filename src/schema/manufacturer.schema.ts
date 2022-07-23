@@ -1,8 +1,7 @@
-import { CarManufacturer } from './../interfaces/carManufacturer.interface';
-import {model, models, Schema} from "mongoose";
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-
-const schema = new Schema <CarManufacturer>(
+export const ManufacturerSchema = new mongoose.Schema(
     {
           maker_name: {
             type: String,
@@ -29,7 +28,3 @@ const schema = new Schema <CarManufacturer>(
         timestamps: true
     }
 )
-
-
-const carsapp_carmanufacturers = models.carsapp_carmanufacturers || model<CarManufacturer>('carsapp_carmanufacturers', schema);
-export default carsapp_carmanufacturers;

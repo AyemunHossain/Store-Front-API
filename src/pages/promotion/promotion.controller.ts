@@ -23,23 +23,23 @@ import { AdminPermissionGuard } from '../../guards/admin-permission.guard';
 import { AdminJwtAuthGuard } from '../../guards/admin-jwt-auth.guard';
 import { ResponsePayload } from '../../interfaces/response-payload.interface';
 import { MongoIdValidationPipe } from '../../pipes/mongo-id-validation.pipe';
-import { CarService } from './car.service';
+import { PromotionService } from './promotion.service';
 import {
-  AddCarDto,
-  FilterAndPaginationCarDto,
-  OptionCarDto,
-  UpdateCarDto,
-} from '../../dto/car.dto';
+  AddPromotionDto,
+  FilterAndPaginationPromotionDto,
+  OptionPromotionDto,
+  UpdatePromotionDto,
+} from '../../dto/promotion.dto';
 
-@Controller('tag')
-export class CarController {
-  private logger = new Logger(CarController.name);
+@Controller('promotion')
+export class PromotionController {
+  private logger = new Logger(PromotionController.name);
 
-  constructor(private tagService: CarService) {}
+  constructor(private promotionService: PromotionService) {}
 
   /**
-   * addCar
-   * insertManyCar
+   * addPromotion
+   * insertManyPromotion
    */
   @Post('/add')
   @UsePipes(ValidationPipe)
@@ -48,11 +48,11 @@ export class CarController {
   @AdminMetaPermissions(AdminPermissions.CREATE)
   @UseGuards(AdminPermissionGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async addCar(
+  async addPromotion(
     @Body()
-    addCarDto: AddCarDto,
+    addPromotionDto: AddPromotionDto,
   ): Promise<ResponsePayload> {
-    return await this.tagService.addCar(addCarDto);
+    return await this.promotionService.addPromotion(addPromotionDto);
   }
 
   @Post('/insert-many')
@@ -62,28 +62,28 @@ export class CarController {
   @AdminMetaPermissions(AdminPermissions.CREATE)
   @UseGuards(AdminPermissionGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async insertManyCar(
+  async insertManyPromotion(
     @Body()
     body: {
-      data: AddCarDto[];
-      option: OptionCarDto;
+      data: AddPromotionDto[];
+      option: OptionPromotionDto;
     },
   ): Promise<ResponsePayload> {
-    return await this.tagService.insertManyCar(body.data, body.option);
+    return await this.promotionService.insertManyPromotion(body.data, body.option);
   }
 
   /**
-   * getAllCars
-   * getCarById
+   * getAllPromotions
+   * getPromotionById
    */
   @Version(VERSION_NEUTRAL)
   @Post('/get-all')
   @UsePipes(ValidationPipe)
-  async getAllCars(
-    @Body() filterCarDto: FilterAndPaginationCarDto,
+  async getAllPromotions(
+    @Body() filterPromotionDto: FilterAndPaginationPromotionDto,
     @Query('q') searchString: string,
   ): Promise<ResponsePayload> {
-    return this.tagService.getAllCars(filterCarDto, searchString);
+    return this.promotionService.getAllPromotions(filterPromotionDto, searchString);
   }
 
   @Version(VERSION_NEUTRAL)
@@ -91,16 +91,16 @@ export class CarController {
   @AdminMetaRoles(AdminRoles.SUPER_ADMIN, AdminRoles.ADMIN)
   @UseGuards(AdminRolesGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async getCarById(
+  async getPromotionById(
     @Param('id', MongoIdValidationPipe) id: string,
     @Query() select: string,
   ): Promise<ResponsePayload> {
-    return await this.tagService.getCarById(id, select);
+    return await this.promotionService.getPromotionById(id, select);
   }
 
   /**
-   * updateCarById
-   * updateMultipleCarById
+   * updatePromotionById
+   * updateMultiplePromotionById
    */
   @Version(VERSION_NEUTRAL)
   @Put('/update-data/:id')
@@ -110,11 +110,11 @@ export class CarController {
   @AdminMetaPermissions(AdminPermissions.EDIT)
   @UseGuards(AdminPermissionGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async updateCarById(
+  async updatePromotionById(
     @Param('id', MongoIdValidationPipe) id: string,
-    @Body() updateCarDto: UpdateCarDto,
+    @Body() updatePromotionDto: UpdatePromotionDto,
   ): Promise<ResponsePayload> {
-    return await this.tagService.updateCarById(id, updateCarDto);
+    return await this.promotionService.updatePromotionById(id, updatePromotionDto);
   }
 
   @Version(VERSION_NEUTRAL)
@@ -125,18 +125,18 @@ export class CarController {
   @AdminMetaPermissions(AdminPermissions.EDIT)
   @UseGuards(AdminPermissionGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async updateMultipleCarById(
-    @Body() updateCarDto: UpdateCarDto,
+  async updateMultiplePromotionById(
+    @Body() updatePromotionDto: UpdatePromotionDto,
   ): Promise<ResponsePayload> {
-    return await this.tagService.updateMultipleCarById(
-      updateCarDto.ids,
-      updateCarDto,
+    return await this.promotionService.updateMultiplePromotionById(
+      updatePromotionDto.ids,
+      updatePromotionDto,
     );
   }
 
   /**
-   * deleteCarById
-   * deleteMultipleCarById
+   * deletePromotionById
+   * deleteMultiplePromotionById
    */
   @Version(VERSION_NEUTRAL)
   @Delete('/delete-data/:id')
@@ -146,11 +146,11 @@ export class CarController {
   @AdminMetaPermissions(AdminPermissions.DELETE)
   @UseGuards(AdminPermissionGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async deleteCarById(
+  async deletePromotionById(
     @Param('id', MongoIdValidationPipe) id: string,
     @Query('checkUsage') checkUsage: boolean,
   ): Promise<ResponsePayload> {
-    return await this.tagService.deleteCarById(id, Boolean(checkUsage));
+    return await this.promotionService.deletePromotionById(id, Boolean(checkUsage));
   }
 
   @Version(VERSION_NEUTRAL)
@@ -161,11 +161,11 @@ export class CarController {
   @AdminMetaPermissions(AdminPermissions.DELETE)
   @UseGuards(AdminPermissionGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async deleteMultipleCarById(
+  async deleteMultiplePromotionById(
     @Body() data: { ids: string[] },
     @Query('checkUsage') checkUsage: boolean,
   ): Promise<ResponsePayload> {
-    return await this.tagService.deleteMultipleCarById(
+    return await this.promotionService.deleteMultiplePromotionById(
       data.ids,
       Boolean(checkUsage),
     );

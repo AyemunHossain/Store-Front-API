@@ -1,10 +1,7 @@
-import { CarHeadLights } from './../interfaces/carHeadLights.interface';
-import { CarBodyType } from '../interfaces/carBodyType.interface';
-import { model,models,Schema } from 'mongoose';
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-
-
-const schema = new Schema <CarHeadLights>(
+export const CarHeadLightsSchema = new mongoose.Schema(
     {   
 
     front_lighting_type: {
@@ -24,7 +21,3 @@ const schema = new Schema <CarHeadLights>(
         timestamps: true
     }
 )
-
-
-const carsapp_carheadlights = models.carsapp_carheadlights || model<CarHeadLights>('carsapp_carheadlights', schema);
-export default carsapp_carheadlights;

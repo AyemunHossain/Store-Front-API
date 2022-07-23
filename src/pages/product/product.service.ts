@@ -11,36 +11,36 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ResponsePayload } from '../../interfaces/response-payload.interface';
 import { ErrorCodes } from '../../enum/error-code.enum';
-import { Car } from '../../interfaces/car.interface';
+import { Product } from '../../interfaces/product.interface';
 import {
-  AddCarDto,
-  FilterAndPaginationCarDto,
-  OptionCarDto,
-  UpdateCarDto,
-} from '../../dto/car.dto';
+  AddProductDto,
+  FilterAndPaginationProductDto,
+  OptionProductDto,
+  UpdateProductDto,
+} from '../../dto/product.dto';
 import { Cache } from 'cache-manager';
 
 const ObjectId = Types.ObjectId;
 
 @Injectable()
-export class CarService {
-  private logger = new Logger(CarService.name);
+export class ProductService {
+  private logger = new Logger(ProductService.name);
   // Cache
-  private readonly cacheAllData = 'getAllCar';
-  private readonly cacheDataCount = 'getCountCar';
+  private readonly cacheAllData = 'getAllProduct';
+  private readonly cacheDataCount = 'getCountProduct';
 
   constructor(
-    @InjectModel('Car')
-    private readonly tagModel: Model<Car>,
+    @InjectModel('Product')
+    private readonly productModel: Model<Product>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   /**
-   * addCar
-   * insertManyCar
+   * addProduct
+   * insertManyProduct
    */
-  async addCar(addCarDto: AddCarDto): Promise<ResponsePayload> {
-    const newData = new this.tagModel(addCarDto);
+  async addProduct(addProductDto: AddProductDto): Promise<ResponsePayload> {
+    const newData = new this.productModel(addProductDto);
     try {
       const saveData = await newData.save();
       const data = {
@@ -61,16 +61,16 @@ export class CarService {
     }
   }
 
-  async insertManyCar(
-    addCarsDto: AddCarDto[],
-    optionCarDto: OptionCarDto,
+  async insertManyProduct(
+    addProductsDto: AddProductDto[],
+    optionProductDto: OptionProductDto,
   ): Promise<ResponsePayload> {
-    const { deleteMany } = optionCarDto;
+    const { deleteMany } = optionProductDto;
     if (deleteMany) {
-      await this.tagModel.deleteMany({});
+      await this.productModel.deleteMany({});
     }
     try {
-      const saveData = await this.tagModel.insertMany(addCarsDto);
+      const saveData = await this.productModel.insertMany(addProductsDto);
       // Cache Removed
       await this.cacheManager.del(this.cacheAllData);
       await this.cacheManager.del(this.cacheDataCount);
@@ -87,18 +87,18 @@ export class CarService {
   }
 
   /**
-   * getAllCars
-   * getCarById
+   * getAllProducts
+   * getProductById
    */
 
-  async getAllCars(
-    filterCarDto: FilterAndPaginationCarDto,
+  async getAllProducts(
+    filterProductDto: FilterAndPaginationProductDto,
     searchQuery?: string,
   ): Promise<ResponsePayload> {
-    const { filter } = filterCarDto;
-    const { pagination } = filterCarDto;
-    const { sort } = filterCarDto;
-    const { select } = filterCarDto;
+    const { filter } = filterProductDto;
+    const { pagination } = filterProductDto;
+    const { sort } = filterProductDto;
+    const { select } = filterProductDto;
 
     /*** GET FROM CACHE ***/
     if (!pagination && !filter) {
@@ -117,7 +117,7 @@ export class CarService {
     this.logger.log('Not a Cached page');
 
     // Essential Variables
-    const aggregateStages = [];
+    const aggregateSproductes = [];
     let mFilter = {};
     let mSort = {};
     let mSelect = {};
@@ -146,15 +146,15 @@ export class CarService {
 
     // Finalize
     if (Object.keys(mFilter).length) {
-      aggregateStages.push({ $match: mFilter });
+      aggregateSproductes.push({ $match: mFilter });
     }
 
     if (Object.keys(mSort).length) {
-      aggregateStages.push({ $sort: mSort });
+      aggregateSproductes.push({ $sort: mSort });
     }
 
     if (!pagination) {
-      aggregateStages.push({ $project: mSelect });
+      aggregateSproductes.push({ $project: mSelect });
     }
 
     // Pagination
@@ -186,9 +186,9 @@ export class CarService {
         };
       }
 
-      aggregateStages.push(mPagination);
+      aggregateSproductes.push(mPagination);
 
-      aggregateStages.push({
+      aggregateSproductes.push({
         $project: {
           data: 1,
           count: { $arrayElemAt: ['$metadata.total', 0] },
@@ -197,7 +197,7 @@ export class CarService {
     }
 
     try {
-      const dataAggregates = await this.tagModel.aggregate(aggregateStages);
+      const dataAggregates = await this.productModel.aggregate(aggregateSproductes);
       if (pagination) {
         return {
           ...{ ...dataAggregates[0] },
@@ -231,9 +231,9 @@ export class CarService {
     }
   }
 
-  async getCarById(id: string, select: string): Promise<ResponsePayload> {
+  async getProductById(id: string, select: string): Promise<ResponsePayload> {
     try {
-      const data = await this.tagModel.findById(id).select(select);
+      const data = await this.productModel.findById(id).select(select);
       return {
         success: true,
         message: 'Success',
@@ -245,16 +245,16 @@ export class CarService {
   }
 
   /**
-   * updateCarById
-   * updateMultipleCarById
+   * updateProductById
+   * updateMultipleProductById
    */
-  async updateCarById(
+  async updateProductById(
     id: string,
-    updateCarDto: UpdateCarDto,
+    updateProductDto: UpdateProductDto,
   ): Promise<ResponsePayload> {
     let data;
     try {
-      data = await this.tagModel.findById(id);
+      data = await this.productModel.findById(id);
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }
@@ -262,8 +262,8 @@ export class CarService {
       throw new NotFoundException('No Data found!');
     }
     try {
-      await this.tagModel.findByIdAndUpdate(id, {
-        $set: updateCarDto,
+      await this.productModel.findByIdAndUpdate(id, {
+        $set: updateProductDto,
       });
       // Cache Removed
       await this.cacheManager.del(this.cacheAllData);
@@ -278,16 +278,16 @@ export class CarService {
     }
   }
 
-  async updateMultipleCarById(
+  async updateMultipleProductById(
     ids: string[],
-    updateCarDto: UpdateCarDto,
+    updateProductDto: UpdateProductDto,
   ): Promise<ResponsePayload> {
     const mIds = ids.map((m) => new ObjectId(m));
 
     try {
-      await this.tagModel.updateMany(
+      await this.productModel.updateMany(
         { _id: { $in: mIds } },
-        { $set: updateCarDto },
+        { $set: updateProductDto },
       );
 
       // Cache Removed
@@ -304,16 +304,16 @@ export class CarService {
   }
 
   /**
-   * deleteCarById
-   * deleteMultipleCarById
+   * deleteProductById
+   * deleteMultipleProductById
    */
-  async deleteCarById(
+  async deleteProductById(
     id: string,
     checkUsage: boolean,
   ): Promise<ResponsePayload> {
     let data;
     try {
-      data = await this.tagModel.findById(id);
+      data = await this.productModel.findById(id);
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }
@@ -324,29 +324,28 @@ export class CarService {
       throw new NotFoundException('Sorry! Read only data can not be deleted');
     }
     try {
-      await this.tagModel.findByIdAndDelete(id);
+      await this.productModel.findByIdAndDelete(id);
       // Cache Removed
       await this.cacheManager.del(this.cacheAllData);
       await this.cacheManager.del(this.cacheDataCount);
 
       // Reset Product Category Reference
       if (checkUsage) {
-        const defaultData = await this.tagModel.findOne({
+        const defaultData = await this.productModel.findOne({
           readOnly: true,
         });
         const resetData = {
-          tag: {
+          product: {
             _id: defaultData._id,
-            name: defaultData.carName,
           },
         };
         // Update Deleted Data
         // await this.projectModel.updateMany(
-        //   { 'tag._id': new ObjectId(id) },
+        //   { 'product._id': new ObjectId(id) },
         //   { $set: resetData },
         // );
         // await this.taskModel.updateMany(
-        //   { 'tag._id': new ObjectId(id) },
+        //   { 'product._id': new ObjectId(id) },
         //   { $set: resetData },
         // );
       }
@@ -360,41 +359,40 @@ export class CarService {
     }
   }
 
-  async deleteMultipleCarById(
+  async deleteMultipleProductById(
     ids: string[],
     checkUsage: boolean,
   ): Promise<ResponsePayload> {
     try {
       const mIds = ids.map((m) => new ObjectId(m));
       // Remove Read Only Data
-      const allData = await this.tagModel.find({ _id: { $in: mIds } });
+      const allData = await this.productModel.find({ _id: { $in: mIds } });
       const filteredIds = allData
         .filter((f) => f.readOnly !== true)
         .map((m) => m._id);
-      await this.tagModel.deleteMany({ _id: filteredIds });
+      await this.productModel.deleteMany({ _id: filteredIds });
       // Cache Removed
       await this.cacheManager.del(this.cacheAllData);
       await this.cacheManager.del(this.cacheDataCount);
 
       // Reset Product Category Reference
       if (checkUsage) {
-        const defaultData = await this.tagModel.findOne({
+        const defaultData = await this.productModel.findOne({
           readOnly: true,
         });
         const resetData = {
-          tag: {
+          product: {
             _id: defaultData._id,
-            name: defaultData.carName,
           },
         };
 
         // Update Product
         // await this.projectModel.updateMany(
-        //   { 'tag._id': { $in: mIds } },
+        //   { 'product._id': { $in: mIds } },
         //   { $set: resetData },
         // );
         // await this.taskModel.updateMany(
-        //   { 'tag._id': { $in: mIds } },
+        //   { 'product._id': { $in: mIds } },
         //   { $set: resetData },
         // );
       }

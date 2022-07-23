@@ -16,6 +16,9 @@ import { UserTypeModule } from './pages/user-type/user-type.module';
 import { DashboardModule } from './pages/dashboard/dashboard.module';
 import { InvoiceModule } from './pages/invoice/invoice.module';
 import { BrandModule } from './pages/brand/brand.module';
+import { ProductModule } from './pages/product/product.module';
+import { PromotionModule } from './pages/promotion/promotion.module';
+import { MerchantModule } from './pages/merchant/merchant.module';
 
 @Module({
   imports: [
@@ -37,6 +40,9 @@ import { BrandModule } from './pages/brand/brand.module';
     DashboardModule,
     InvoiceModule,
     BrandModule,
+    ProductModule,
+    PromotionModule,
+    MerchantModule
   ],
 
   controllers: [AppController],

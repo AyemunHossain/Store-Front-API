@@ -1,9 +1,7 @@
-import { CarWheel } from './../interfaces/carWheel.interface';
-import { model, models, Schema } from 'mongoose';
-import { Otp } from '../interfaces/otp.interface';
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-
-const schema = new Schema<any>(
+export const OtpSchema = new mongoose.Schema(
     {
         phoneNo: {
             type: String,
@@ -32,7 +30,3 @@ const schema = new Schema<any>(
         timestamps: { createdAt: false, updatedAt: true },
     },
 )
-
-
-const otp = models.otp || model<CarWheel>('otp', schema);
-export default otp;

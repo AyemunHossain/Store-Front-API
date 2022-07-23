@@ -32,7 +32,7 @@ export class UploadController {
   constructor(
     private configService: ConfigService,
     private uploadService: UploadService,
-  ) {}
+  ) { }
 
   /**
    * SINGLE IMAGE
@@ -59,8 +59,7 @@ export class UploadController {
     @Req() req,
   ) {
     const isProduction = this.configService.get<boolean>('productionBuild');
-    const baseurl =
-      req.protocol + `${isProduction ? 's' : ''}://` + req.get('host') + '/api';
+    const baseurl = req.protocol + `${isProduction ? 's' : ''}://` + req.get('host') + '/api';
     const path = file.path;
     const url = `${baseurl}/${path}`;
     return {

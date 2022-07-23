@@ -1,13 +1,13 @@
 import * as mongoose from 'mongoose';
 import { Schema } from 'mongoose';
 
-export const CarSchema = new mongoose.Schema(
+export const ProductSchema = new mongoose.Schema(
   {
     readOnly: {
       type: Boolean,
       required: false,
     },
-    carName: {
+    Name: {
       type: String,
       required: false
     },
@@ -47,6 +47,10 @@ export const CarSchema = new mongoose.Schema(
       type: String,
       required: false
     },
+    productType: {
+      type: String,
+      required: false
+    },
     noOfViews: {
       type: String,
       required: false
@@ -59,7 +63,7 @@ export const CarSchema = new mongoose.Schema(
       type: String,
       required: false
     },
-    carStatus: {
+    Status: {
       type: String,
       required: false
     },
@@ -97,91 +101,103 @@ export const CarSchema = new mongoose.Schema(
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref: 'UserModel'
+      ref: 'User'
     },
-    exteriorColor: {
+    merchant: {
       type: Schema.Types.ObjectId,
-      ref: 'carsappCarcolors',
-      required: false
+      ref: 'Merchant'
     },
-    interiorColor: {
+    admin: {
       type: Schema.Types.ObjectId,
-      ref: 'carsapp_interiorcolors'
+      ref: 'Admin'
     },
-    carBackLight: {
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCarbacklights'
+    approved:{
+      type: Boolean,
+      required:false
     },
-    carBodyType: {
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCarbodytypes'
-    },
-    carBrake: {
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCarbrakes'
-    },
-    carEngine: {
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCarengines'
-    },
-    carFuel: {
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCarfueles'
-    },
-    carHeadLight: {
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCarheadlights'
-    },
-    carLocation: {
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCarlocations'
-    },
-    carManufacturer: {
+    // exteriorColor: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarcolors',
+    //   required: false
+    // },
+    // interiorColor: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsapp_interiorcolors'
+    // },
+    // BackLight: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarbacklights'
+    // },
+    // BodyType: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarbodytypes'
+    // },
+    // Brake: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarbrakes'
+    // },
+    // Engine: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarengines'
+    // },
+    // Fuel: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarfueles'
+    // },
+    // HeadLight: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarheadlights'
+    // },
+    // Location: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarlocations'
+    // },
+    Manufacturer: {
       _id: {
         type: Schema.Types.ObjectId,
-        ef: 'carsappCarmanufacturers',
+        ef: 'Manufacturer',
         required: true,
       },
-      makerName: {
+      name: {
         type: String,
         required: true,
       },
     },
-    carSeats: {
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCarbodytypes'
-    },
-    carSuspension: {
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCarsuspensions'
-    },
-    carType: {
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCartypes'
-    },
-    modelName: {
-      _id: {
-        type: Schema.Types.ObjectId,
-        ef: 'carsappCarmodels',
-        required: true,
-      },
-      modelName: {
-        type: String,
-        required: true,
-      },
-      releaseYear: {
-        type: String,
-        required: false,
-      },
-    },
-    carFeatures: [{
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCarfeatures'
-    }],
-    wheelType: {
-      type: Schema.Types.ObjectId,
-      ref: 'carsappCarwheels'
-    },
+    // Seats: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarbodytypes'
+    // },
+    // Suspension: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarsuspensions'
+    // },
+    // Type: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCartypes'
+    // },
+    // modelName: {
+    //   _id: {
+    //     type: Schema.Types.ObjectId,
+    //     ef: 'carsappCarmodels',
+    //     required: true,
+    //   },
+    //   modelName: {
+    //     type: String,
+    //     required: true,
+    //   },
+    //   releaseYear: {
+    //     type: String,
+    //     required: false,
+    //   },
+    // },
+    // Features: [{
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarfeatures'
+    // }],
+    // wheelType: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'carsappCarwheels'
+    // },
     isFeatured: {
       type: Boolean,
       required: false
@@ -214,7 +230,7 @@ export const CarSchema = new mongoose.Schema(
       type: Number,
       required: false
     },
-    carMileage: {
+    Mileage: {
       type: Number,
       required: false
     },
@@ -229,18 +245,18 @@ export const CarSchema = new mongoose.Schema(
       type: String,
       required: false
     },
-    carCity: {
-      _id: {
-        type: Schema.Types.ObjectId,
-        ref: 'districts',
-        required: false
-      },
-      name: {
-        type: String,
-        required: false,
-        trim: true,
-      },
-    },
+    // City: {
+    //   _id: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'districts',
+    //     required: false
+    //   },
+    //   name: {
+    //     type: String,
+    //     required: false,
+    //     trim: true,
+    //   },
+    // },
   },
   {
     versionKey: false,

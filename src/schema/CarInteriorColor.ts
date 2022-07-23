@@ -1,9 +1,7 @@
-import { model, models, Schema } from "mongoose";
-import { CarInteriorColor } from "../interfaces/carInteriorColor.interface";
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-
-const schema = new Schema<CarInteriorColor>({
-
+export const CarInteriorColorSchema = new mongoose.Schema({
     int_color: {
       type: String,
       required: true
@@ -24,7 +22,3 @@ const schema = new Schema<CarInteriorColor>({
   {
       timestamps: true
   })
-
-
-const carsapp_interiorcolors = models.carsapp_interiorcolors || model<CarInteriorColor>('carsapp_interiorcolors', schema);
-export default carsapp_interiorcolors;

@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Schema } from 'mongoose';
 
-export const CarBodyTypeSchema = new mongoose.Schema(
+export const BodyTypeSchema = new mongoose.Schema(
     {   
     body_name: {
         type: String,

@@ -1,8 +1,8 @@
  import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { User } from '../interfaces/user.interface';
+import { Merchant } from '../interfaces/merchant.interface';
 
-export const GetUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): User => {
+export const GetMerchant = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext): Merchant => {
     const request = ctx.switchToHttp().getRequest();
     // console.log('request', request);
     return request.user;

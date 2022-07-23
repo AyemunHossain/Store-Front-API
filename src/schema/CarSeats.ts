@@ -1,9 +1,7 @@
-import { Schema, model,models } from 'mongoose';
-import { CarSeats } from '../interfaces/carSeats.interface';
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-
-
-const schema = new Schema <CarSeats>(
+export const CarSeatsSchema = new mongoose.Schema(
   {
     ventilated_seats: {
         type: String,
@@ -22,7 +20,3 @@ const schema = new Schema <CarSeats>(
         timestamps: true
     }
 )
-
-
-const carsapp_carseats = models.carsapp_carseats || model<CarSeats>('carsapp_carseats', schema);
-export default carsapp_carseats;
