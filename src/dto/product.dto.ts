@@ -20,6 +20,12 @@ export class AddProductDto {
   @IsString()
   Name: string;
 
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  productCondition: string;
+
   @IsOptional()
   admin: any;
 

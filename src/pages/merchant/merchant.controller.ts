@@ -80,6 +80,7 @@ export class MerchantController {
    * Get All Merchants V3 (Filter, Pagination, Select, Sort, Search Query with Aggregation) ** Recommended
    * Get All Merchants by Search
    */
+
   @Version(VERSION_NEUTRAL)
   @Get('/logged-in-merchant-data')
   @UseGuards(AuthGuard(PASSPORT_USER_TOKEN_TYPE))
@@ -92,15 +93,17 @@ export class MerchantController {
 
   @Version(VERSION_NEUTRAL)
   @Post('/get-all')
-  @UsePipes(ValidationPipe)
-  @AdminMetaRoles(
-    AdminRoles.SUPER_ADMIN,
-    AdminRoles.ADMIN,
-    AdminRoles.EDITOR,
-    AdminRoles.ACCOUNTANT,
-  )
-  @UseGuards(AdminRolesGuard)
-  @UseGuards(AdminJwtAuthGuard)
+  
+  // @UsePipes(ValidationPipe)
+  // @AdminMetaRoles(
+  //   AdminRoles.SUPER_ADMIN,
+  //   AdminRoles.ADMIN,
+  //   AdminRoles.EDITOR,
+  //   AdminRoles.ACCOUNTANT,
+  // )
+  // @UseGuards(AdminRolesGuard)
+  // @UseGuards(AdminJwtAuthGuard)
+
   async getAllMerchantsV3(
     @Body() filterMerchantDto: FilterAndPaginationMerchantDto,
     @Query('q') searchString: string,

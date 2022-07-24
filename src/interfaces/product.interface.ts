@@ -3,6 +3,7 @@ export interface Product {
     _id?: string,
     Name?: string,
     productType?: string,
+    productCondition?: string,
     seatingCapacity?: number,
     engineCapacity?: number,
     Mileage?: number,

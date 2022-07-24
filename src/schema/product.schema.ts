@@ -51,6 +51,10 @@ export const ProductSchema = new mongoose.Schema(
       type: String,
       required: false
     },
+    productCondition: {
+      type: String,
+      required: false
+    },
     noOfViews: {
       type: String,
       required: false
@@ -152,17 +156,17 @@ export const ProductSchema = new mongoose.Schema(
     //   type: Schema.Types.ObjectId,
     //   ref: 'carsappCarlocations'
     // },
-    Manufacturer: {
-      _id: {
-        type: Schema.Types.ObjectId,
-        ef: 'Manufacturer',
-        required: true,
-      },
-      name: {
-        type: String,
-        required: true,
-      },
-    },
+    // Manufacturer: {
+    //   _id: {
+    //     type: Schema.Types.ObjectId,
+    //     ef: 'Manufacturer',
+    //     required: true,
+    //   },
+    //   name: {
+    //     type: String,
+    //     required: true,
+    //   },
+    // },
     // Seats: {
     //   type: Schema.Types.ObjectId,
     //   ref: 'carsappCarbodytypes'
@@ -208,6 +212,18 @@ export const ProductSchema = new mongoose.Schema(
     },
     modelCar: {
       type: Boolean,
+      required: false
+    },
+    maker: {
+      type: String,
+      required: false
+    },
+    model: {
+      type: String,
+      required: false
+    },
+    modelYear: {
+      type: String,
       required: false
     },
     fixedPrice: {

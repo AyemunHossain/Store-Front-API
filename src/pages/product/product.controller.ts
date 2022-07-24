@@ -31,7 +31,7 @@ import {
   UpdateProductDto,
 } from '../../dto/product.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { PASSPORT_USER_TOKEN_TYPE } from 'src/core/global-variables';
+import { PASSPORT_MERCHANT_TOKEN_TYPE, PASSPORT_USER_TOKEN_TYPE } from 'src/core/global-variables';
 
 @Controller('product')
 export class ProductController {
@@ -59,7 +59,7 @@ export class ProductController {
 
   @Post('/add-by-merchant')
   @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard(PASSPORT_USER_TOKEN_TYPE))
+  // @UseGuards(AuthGuard(PASSPORT_MERCHANT_TOKEN_TYPE))
   async addProductByMerchant(
     @Body()
     addProductDto: AddProductDto,

@@ -204,11 +204,12 @@ export class MerchantService {
     filterMerchantDto: FilterAndPaginationMerchantDto,
     searchQuery?: string,
   ): Promise<ResponsePayload> {
+
     const { filter } = filterMerchantDto;
     const { pagination } = filterMerchantDto;
     const { sort } = filterMerchantDto;
     const { select } = filterMerchantDto;
-
+    console.log("_-----------------------------------------------------",filterMerchantDto,searchQuery)
     /*** GET FROM CACHE ***/
     if (!pagination && !filter) {
       const cacheData: any[] = await this.cacheManager.get(this.cacheAllData);

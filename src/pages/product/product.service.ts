@@ -40,6 +40,7 @@ export class ProductService {
    * insertManyProduct
    */
   async addProduct(addProductDto: AddProductDto): Promise<ResponsePayload> {
+    console.log(addProductDto)
     const newData = new this.productModel(addProductDto);
     try {
       const saveData = await newData.save();
