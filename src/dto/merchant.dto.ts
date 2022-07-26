@@ -131,3 +131,13 @@ export class UpdateMerchantDto {
   @IsIn([GenderTypes.MALE, GenderTypes.FEMALE, GenderTypes.OTHER])
   gender: string;
 }
+
+
+
+export class UpdateMerchantSubscriptionDto {
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  subscriptionPlan: string;
+}

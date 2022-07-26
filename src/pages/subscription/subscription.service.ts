@@ -11,41 +11,44 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ResponsePayload } from '../../interfaces/response-payload.interface';
 import { ErrorCodes } from '../../enum/error-code.enum';
-import { Product } from '../../interfaces/product.interface';
+import { Subscription } from '../../interfaces/subscription.interface';
 import {
-  AddProductDto,
-  FilterAndPaginationProductDto,
-  OptionProductDto,
-  UpdateProductDto,
-} from '../../dto/product.dto';
+  AddSubscriptionDto,
+  FilterAndPaginationSubscriptionDto,
+  OptionSubscriptionDto,
+  UpdateSubscriptionDto,
+} from '../../dto/subscription.dto';
 import { Cache } from 'cache-manager';
-import { Merchant } from 'src/interfaces/merchant.interface';
 
 const ObjectId = Types.ObjectId;
 
 @Injectable()
-export class ProductService {
-  private logger = new Logger(ProductService.name);
+export class SubscriptionService {
+  private logger = new Logger(SubscriptionService.name);
   // Cache
-  private readonly cacheAllData = 'getAllProduct';
-  private readonly cacheDataCount = 'getCountProduct';
+  private readonly cacheAllData = 'getAllSubscription';
+  private readonly cacheDataCount = 'getCountSubscription';
 
   constructor(
-    @InjectModel('Product')
-    private readonly productModel: Model<Product>,
-    @InjectModel('Merchant')
-    private readonly merchantModel: Model<Merchant>,
-
+    @InjectModel('Subscription')
+    private readonly subscriptionModel: Model<Subscription>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   /**
-   * addProduct
-   * insertManyProduct
+   * addSubscription
+   * insertManySubscription
    */
-  async addProduct(addProductDto: AddProductDto): Promise<ResponsePayload> {
-    console.log(addProductDto)
-    const newData = new this.productModel(addProductDto);
+  async addSubscription(addSubscriptionDto: AddSubscriptionDto): Promise<ResponsePayload> {
+    
+    const data = {
+      name:addSubscriptionDto.name,
+      days:addSubscriptionDto.days,
+      postCount:addSubscriptionDto.postCount,
+      endAt: new Date(+new Date() + parseInt(addSubscriptionDto.days)*24*60*60*1000),
+      price:addSubscriptionDto.price,
+    }
+    const newData = new this.subscriptionModel(data);
     try {
       const saveData = await newData.save();
       const data = {
@@ -66,63 +69,16 @@ export class ProductService {
     }
   }
 
-  async addProductByMerchant(
-    merchant: Merchant,
-    addProductDto: AddProductDto
-    ): Promise<ResponsePayload> {
-    
-
-
-    const vehicale = await this.productModel.find({merchant:merchant._id}).count()
-    const merchant_subs_obj : any = await this.merchantModel.findOne({_id:merchant._id}).populate('subscriptionPlan')
-    
-    if(!merchant_subs_obj.subscriptionPlan ){
-      return {
-        success: false,
-        message: 'Please buy new subscription',
-      } as ResponsePayload;
-    }
-
-    if(merchant_subs_obj.subscriptionPlan.postCount > vehicale){
-      const newData = new this.productModel({...addProductDto,...{merchant:merchant._id}},);
-
-      try {
-        const saveData = await newData.save();
-        const data = {
-          _id: saveData._id,
-        };
-  
-        // Cache Removed
-        await this.cacheManager.del(this.cacheAllData);
-        await this.cacheManager.del(this.cacheDataCount);
-  
-        return {
-          success: true,
-          message: 'Data Added Success',
-          data,
-        } as ResponsePayload;
-      } catch (error) {
-        throw new InternalServerErrorException(error.message);
-      }
-    }else{
-      return {
-        success: false,
-        message: 'You have excited Car post limit, please buy new subscription',
-      } as ResponsePayload;
-    }
-    
-  }
-
-  async insertManyProduct(
-    addProductsDto: AddProductDto[],
-    optionProductDto: OptionProductDto,
+  async insertManySubscription(
+    addSubscriptionsDto: AddSubscriptionDto[],
+    optionSubscriptionDto: OptionSubscriptionDto,
   ): Promise<ResponsePayload> {
-    const { deleteMany } = optionProductDto;
+    const { deleteMany } = optionSubscriptionDto;
     if (deleteMany) {
-      await this.productModel.deleteMany({});
+      await this.subscriptionModel.deleteMany({});
     }
     try {
-      const saveData = await this.productModel.insertMany(addProductsDto);
+      const saveData = await this.subscriptionModel.insertMany(addSubscriptionsDto);
       // Cache Removed
       await this.cacheManager.del(this.cacheAllData);
       await this.cacheManager.del(this.cacheDataCount);
@@ -139,18 +95,18 @@ export class ProductService {
   }
 
   /**
-   * getAllProducts
-   * getProductById
+   * getAllSubscriptions
+   * getSubscriptionById
    */
 
-  async getAllProducts(
-    filterProductDto: FilterAndPaginationProductDto,
+  async getAllSubscriptions(
+    filterSubscriptionDto: FilterAndPaginationSubscriptionDto,
     searchQuery?: string,
   ): Promise<ResponsePayload> {
-    const { filter } = filterProductDto;
-    const { pagination } = filterProductDto;
-    const { sort } = filterProductDto;
-    const { select } = filterProductDto;
+    const { filter } = filterSubscriptionDto;
+    const { pagination } = filterSubscriptionDto;
+    const { sort } = filterSubscriptionDto;
+    const { select } = filterSubscriptionDto;
 
     /*** GET FROM CACHE ***/
     if (!pagination && !filter) {
@@ -169,7 +125,7 @@ export class ProductService {
     this.logger.log('Not a Cached page');
 
     // Essential Variables
-    const aggregateSproductes = [];
+    const aggregateSsubscriptiones = [];
     let mFilter = {};
     let mSort = {};
     let mSelect = {};
@@ -198,15 +154,15 @@ export class ProductService {
 
     // Finalize
     if (Object.keys(mFilter).length) {
-      aggregateSproductes.push({ $match: mFilter });
+      aggregateSsubscriptiones.push({ $match: mFilter });
     }
 
     if (Object.keys(mSort).length) {
-      aggregateSproductes.push({ $sort: mSort });
+      aggregateSsubscriptiones.push({ $sort: mSort });
     }
 
     if (!pagination) {
-      aggregateSproductes.push({ $project: mSelect });
+      aggregateSsubscriptiones.push({ $project: mSelect });
     }
 
     // Pagination
@@ -238,9 +194,9 @@ export class ProductService {
         };
       }
 
-      aggregateSproductes.push(mPagination);
+      aggregateSsubscriptiones.push(mPagination);
 
-      aggregateSproductes.push({
+      aggregateSsubscriptiones.push({
         $project: {
           data: 1,
           count: { $arrayElemAt: ['$metadata.total', 0] },
@@ -249,7 +205,7 @@ export class ProductService {
     }
 
     try {
-      const dataAggregates = await this.productModel.find();
+      const dataAggregates = await this.subscriptionModel.find();
       if (pagination) {
         return {
           ...{ ...dataAggregates[0] },
@@ -283,9 +239,9 @@ export class ProductService {
     }
   }
 
-  async getProductById(id: string, select: string): Promise<ResponsePayload> {
+  async getSubscriptionById(id: string, select: string): Promise<ResponsePayload> {
     try {
-      const data = await this.productModel.findById(id).select(select);
+      const data = await this.subscriptionModel.findById(id).select(select);
       return {
         success: true,
         message: 'Success',
@@ -297,16 +253,16 @@ export class ProductService {
   }
 
   /**
-   * updateProductById
-   * updateMultipleProductById
+   * updateSubscriptionById
+   * updateMultipleSubscriptionById
    */
-  async updateProductById(
+  async updateSubscriptionById(
     id: string,
-    updateProductDto: UpdateProductDto,
+    updateSubscriptionDto: UpdateSubscriptionDto,
   ): Promise<ResponsePayload> {
     let data;
     try {
-      data = await this.productModel.findById(id);
+      data = await this.subscriptionModel.findById(id);
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }
@@ -314,8 +270,8 @@ export class ProductService {
       throw new NotFoundException('No Data found!');
     }
     try {
-      await this.productModel.findByIdAndUpdate(id, {
-        $set: updateProductDto,
+      await this.subscriptionModel.findByIdAndUpdate(id, {
+        $set: updateSubscriptionDto,
       });
       // Cache Removed
       await this.cacheManager.del(this.cacheAllData);
@@ -330,16 +286,16 @@ export class ProductService {
     }
   }
 
-  async updateMultipleProductById(
+  async updateMultipleSubscriptionById(
     ids: string[],
-    updateProductDto: UpdateProductDto,
+    updateSubscriptionDto: UpdateSubscriptionDto,
   ): Promise<ResponsePayload> {
     const mIds = ids.map((m) => new ObjectId(m));
 
     try {
-      await this.productModel.updateMany(
+      await this.subscriptionModel.updateMany(
         { _id: { $in: mIds } },
-        { $set: updateProductDto },
+        { $set: updateSubscriptionDto },
       );
 
       // Cache Removed
@@ -356,16 +312,16 @@ export class ProductService {
   }
 
   /**
-   * deleteProductById
-   * deleteMultipleProductById
+   * deleteSubscriptionById
+   * deleteMultipleSubscriptionById
    */
-  async deleteProductById(
+  async deleteSubscriptionById(
     id: string,
     checkUsage: boolean,
   ): Promise<ResponsePayload> {
     let data;
     try {
-      data = await this.productModel.findById(id);
+      data = await this.subscriptionModel.findById(id);
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }
@@ -376,28 +332,29 @@ export class ProductService {
       throw new NotFoundException('Sorry! Read only data can not be deleted');
     }
     try {
-      await this.productModel.findByIdAndDelete(id);
+      await this.subscriptionModel.findByIdAndDelete(id);
       // Cache Removed
       await this.cacheManager.del(this.cacheAllData);
       await this.cacheManager.del(this.cacheDataCount);
 
       // Reset Product Category Reference
       if (checkUsage) {
-        const defaultData = await this.productModel.findOne({
+        const defaultData = await this.subscriptionModel.findOne({
           readOnly: true,
         });
         const resetData = {
-          product: {
+          subscription: {
             _id: defaultData._id,
+            name: defaultData.name,
           },
         };
         // Update Deleted Data
         // await this.projectModel.updateMany(
-        //   { 'product._id': new ObjectId(id) },
+        //   { 'subscription._id': new ObjectId(id) },
         //   { $set: resetData },
         // );
         // await this.taskModel.updateMany(
-        //   { 'product._id': new ObjectId(id) },
+        //   { 'subscription._id': new ObjectId(id) },
         //   { $set: resetData },
         // );
       }
@@ -411,40 +368,41 @@ export class ProductService {
     }
   }
 
-  async deleteMultipleProductById(
+  async deleteMultipleSubscriptionById(
     ids: string[],
     checkUsage: boolean,
   ): Promise<ResponsePayload> {
     try {
       const mIds = ids.map((m) => new ObjectId(m));
       // Remove Read Only Data
-      const allData = await this.productModel.find({ _id: { $in: mIds } });
+      const allData = await this.subscriptionModel.find({ _id: { $in: mIds } });
       const filteredIds = allData
         .filter((f) => f.readOnly !== true)
         .map((m) => m._id);
-      await this.productModel.deleteMany({ _id: filteredIds });
+      await this.subscriptionModel.deleteMany({ _id: filteredIds });
       // Cache Removed
       await this.cacheManager.del(this.cacheAllData);
       await this.cacheManager.del(this.cacheDataCount);
 
       // Reset Product Category Reference
       if (checkUsage) {
-        const defaultData = await this.productModel.findOne({
+        const defaultData = await this.subscriptionModel.findOne({
           readOnly: true,
         });
         const resetData = {
-          product: {
+          subscription: {
             _id: defaultData._id,
+            name: defaultData.name,
           },
         };
 
         // Update Product
         // await this.projectModel.updateMany(
-        //   { 'product._id': { $in: mIds } },
+        //   { 'subscription._id': { $in: mIds } },
         //   { $set: resetData },
         // );
         // await this.taskModel.updateMany(
-        //   { 'product._id': { $in: mIds } },
+        //   { 'subscription._id': { $in: mIds } },
         //   { $set: resetData },
         // );
       }

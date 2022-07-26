@@ -23,95 +23,68 @@ import { AdminPermissionGuard } from '../../guards/admin-permission.guard';
 import { AdminJwtAuthGuard } from '../../guards/admin-jwt-auth.guard';
 import { ResponsePayload } from '../../interfaces/response-payload.interface';
 import { MongoIdValidationPipe } from '../../pipes/mongo-id-validation.pipe';
-import { ProductService } from './product.service';
+import { SubscriptionService } from './subscription.service';
 import {
-  AddProductDto,
-  FilterAndPaginationProductDto,
-  OptionProductDto,
-  UpdateProductDto,
-} from '../../dto/product.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { PASSPORT_MERCHANT_TOKEN_TYPE, PASSPORT_USER_TOKEN_TYPE } from 'src/core/global-variables';
-import { Merchant } from 'src/interfaces/merchant.interface';
-import { GetMerchant } from 'src/decorator/get-merchant.decorator';
-import { MerchantJwtAuthGuard } from 'src/guards/merchant-jwt-auth.guard';
+  AddSubscriptionDto,
+  FilterAndPaginationSubscriptionDto,
+  OptionSubscriptionDto,
+  UpdateSubscriptionDto,
+} from '../../dto/subscription.dto';
 
-@Controller('product')
-export class ProductController {
-  private logger = new Logger(ProductController.name);
+@Controller('subscription')
+export class SubscriptionController {
+  private logger = new Logger(SubscriptionController.name);
 
-  constructor(private productService: ProductService) { }
+  constructor(private subscriptionService: SubscriptionService) {}
 
   /**
-   * addProduct
-   * insertManyProduct
+   * addSubscription
+   * insertManySubscription
    */
-  @Post('/add-by-admin')
+  @Post('/add')
   @UsePipes(ValidationPipe)
-  @AdminMetaRoles(AdminRoles.SUPER_ADMIN, AdminRoles.ADMIN)
-  @UseGuards(AdminRolesGuard)
-  @AdminMetaPermissions(AdminPermissions.CREATE)
-  @UseGuards(AdminPermissionGuard)
-  @UseGuards(AdminJwtAuthGuard)
-  async addProductByAdmin(
+  // @AdminMetaRoles(AdminRoles.SUPER_ADMIN, AdminRoles.ADMIN)
+  // @UseGuards(AdminRolesGuard)
+  // @AdminMetaPermissions(AdminPermissions.CREATE)
+  // @UseGuards(AdminPermissionGuard)
+  // @UseGuards(AdminJwtAuthGuard)
+  async addSubscription(
     @Body()
-    addProductDto: AddProductDto,
+    addSubscriptionDto: AddSubscriptionDto,
   ): Promise<ResponsePayload> {
-    return await this.productService.addProduct(addProductDto);
+    console.log("addSubscriptionDto",addSubscriptionDto)
+    return await this.subscriptionService.addSubscription(addSubscriptionDto);
   }
 
-  @Post('/add-by-merchant')
-  @UsePipes(ValidationPipe)
-  @UseGuards(MerchantJwtAuthGuard)
-  @UsePipes(ValidationPipe)
-  async addProductByMerchant(
-    @GetMerchant() merchant: Merchant,
-    @Body()
-    addProductDto: AddProductDto,
-  ): Promise<ResponsePayload> {
-    return await this.productService.addProductByMerchant(merchant, addProductDto);
-  }
-
-  @Post('/add-by-user')
-  @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard(PASSPORT_USER_TOKEN_TYPE))
-  async addProductByUser(
-    @Body()
-    addProductDto: AddProductDto,
-  ): Promise<ResponsePayload> {
-    return await this.productService.addProduct(addProductDto);
-  }
-
-
-  @Post('/insert-many-admin')
+  @Post('/insert-many')
   @UsePipes(ValidationPipe)
   @AdminMetaRoles(AdminRoles.SUPER_ADMIN)
   @UseGuards(AdminRolesGuard)
   @AdminMetaPermissions(AdminPermissions.CREATE)
   @UseGuards(AdminPermissionGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async insertManyProduct(
+  async insertManySubscription(
     @Body()
     body: {
-      data: AddProductDto[];
-      option: OptionProductDto;
+      data: AddSubscriptionDto[];
+      option: OptionSubscriptionDto;
     },
   ): Promise<ResponsePayload> {
-    return await this.productService.insertManyProduct(body.data, body.option);
+    return await this.subscriptionService.insertManySubscription(body.data, body.option);
   }
 
   /**
-   * getAllProducts
-   * getProductById
+   * getAllSubscriptions
+   * getSubscriptionById
    */
   @Version(VERSION_NEUTRAL)
   @Post('/get-all')
-  //@UsePipes(ValidationPipe)
-  async getAllProducts(
-    @Body() filterProductDto: FilterAndPaginationProductDto,
+  @UsePipes(ValidationPipe)
+  async getAllSubscriptions(
+    @Body() filterSubscriptionDto: FilterAndPaginationSubscriptionDto,
     @Query('q') searchString: string,
   ): Promise<ResponsePayload> {
-    return this.productService.getAllProducts(filterProductDto, searchString);
+    return this.subscriptionService.getAllSubscriptions(filterSubscriptionDto, searchString);
   }
 
   @Version(VERSION_NEUTRAL)
@@ -119,16 +92,16 @@ export class ProductController {
   @AdminMetaRoles(AdminRoles.SUPER_ADMIN, AdminRoles.ADMIN)
   @UseGuards(AdminRolesGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async getProductById(
+  async getSubscriptionById(
     @Param('id', MongoIdValidationPipe) id: string,
     @Query() select: string,
   ): Promise<ResponsePayload> {
-    return await this.productService.getProductById(id, select);
+    return await this.subscriptionService.getSubscriptionById(id, select);
   }
 
   /**
-   * updateProductById
-   * updateMultipleProductById
+   * updateSubscriptionById
+   * updateMultipleSubscriptionById
    */
   @Version(VERSION_NEUTRAL)
   @Put('/update-data/:id')
@@ -138,11 +111,11 @@ export class ProductController {
   @AdminMetaPermissions(AdminPermissions.EDIT)
   @UseGuards(AdminPermissionGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async updateProductById(
+  async updateSubscriptionById(
     @Param('id', MongoIdValidationPipe) id: string,
-    @Body() updateProductDto: UpdateProductDto,
+    @Body() updateSubscriptionDto: UpdateSubscriptionDto,
   ): Promise<ResponsePayload> {
-    return await this.productService.updateProductById(id, updateProductDto);
+    return await this.subscriptionService.updateSubscriptionById(id, updateSubscriptionDto);
   }
 
   @Version(VERSION_NEUTRAL)
@@ -153,18 +126,18 @@ export class ProductController {
   @AdminMetaPermissions(AdminPermissions.EDIT)
   @UseGuards(AdminPermissionGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async updateMultipleProductById(
-    @Body() updateProductDto: UpdateProductDto,
+  async updateMultipleSubscriptionById(
+    @Body() updateSubscriptionDto: UpdateSubscriptionDto,
   ): Promise<ResponsePayload> {
-    return await this.productService.updateMultipleProductById(
-      updateProductDto.ids,
-      updateProductDto,
+    return await this.subscriptionService.updateMultipleSubscriptionById(
+      updateSubscriptionDto.ids,
+      updateSubscriptionDto,
     );
   }
 
   /**
-   * deleteProductById
-   * deleteMultipleProductById
+   * deleteSubscriptionById
+   * deleteMultipleSubscriptionById
    */
   @Version(VERSION_NEUTRAL)
   @Delete('/delete-data/:id')
@@ -174,11 +147,11 @@ export class ProductController {
   @AdminMetaPermissions(AdminPermissions.DELETE)
   @UseGuards(AdminPermissionGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async deleteProductById(
+  async deleteSubscriptionById(
     @Param('id', MongoIdValidationPipe) id: string,
     @Query('checkUsage') checkUsage: boolean,
   ): Promise<ResponsePayload> {
-    return await this.productService.deleteProductById(id, Boolean(checkUsage));
+    return await this.subscriptionService.deleteSubscriptionById(id, Boolean(checkUsage));
   }
 
   @Version(VERSION_NEUTRAL)
@@ -189,11 +162,11 @@ export class ProductController {
   @AdminMetaPermissions(AdminPermissions.DELETE)
   @UseGuards(AdminPermissionGuard)
   @UseGuards(AdminJwtAuthGuard)
-  async deleteMultipleProductById(
+  async deleteMultipleSubscriptionById(
     @Body() data: { ids: string[] },
     @Query('checkUsage') checkUsage: boolean,
   ): Promise<ResponsePayload> {
-    return await this.productService.deleteMultipleProductById(
+    return await this.subscriptionService.deleteMultipleSubscriptionById(
       data.ids,
       Boolean(checkUsage),
     );

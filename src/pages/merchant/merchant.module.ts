@@ -6,14 +6,15 @@ import { PassportModule } from '@nestjs/passport';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 
-import { JwtUserStrategy } from './jwt-merchant.strategy';
-import { PASSPORT_USER_TOKEN_TYPE } from '../../core/global-variables';
+import { JwtMerchantStrategy } from './jwt-merchant.strategy';
+import { PASSPORT_MERCHANT_TOKEN_TYPE } from '../../core/global-variables';
 import { MerchantSchema } from 'src/schema/merchant.schema';
+import { SubscriptionSchema } from 'src/schema/subscription.schema';
 
 @Module({
   imports: [
     PassportModule.register({
-      defaultStrategy: PASSPORT_USER_TOKEN_TYPE,
+      defaultStrategy: PASSPORT_MERCHANT_TOKEN_TYPE,
       property: 'merchant',
       session: false,
     }),
@@ -27,10 +28,10 @@ import { MerchantSchema } from 'src/schema/merchant.schema';
         },
       }),
     }),
-    MongooseModule.forFeature([{ name: 'Merchant', schema: MerchantSchema }]),
+    MongooseModule.forFeature([{ name: 'Merchant', schema: MerchantSchema }, { name: 'Subscription', schema: SubscriptionSchema }]),
   ],
   controllers: [MerchantController],
-  providers: [MerchantService, JwtUserStrategy],
+  providers: [MerchantService, JwtMerchantStrategy],
   exports: [PassportModule],
 })
-export class MerchantModule {}
+export class MerchantModule { }

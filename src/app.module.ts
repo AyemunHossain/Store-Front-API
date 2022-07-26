@@ -19,6 +19,7 @@ import { BrandModule } from './pages/brand/brand.module';
 import { ProductModule } from './pages/product/product.module';
 import { PromotionModule } from './pages/promotion/promotion.module';
 import { MerchantModule } from './pages/merchant/merchant.module';
+import { SubscriptionModule } from './pages/subscription/subscription.module';
 
 @Module({
   imports: [
@@ -42,7 +43,8 @@ import { MerchantModule } from './pages/merchant/merchant.module';
     BrandModule,
     ProductModule,
     PromotionModule,
-    MerchantModule
+    MerchantModule,
+    SubscriptionModule
   ],
 
   controllers: [AppController],

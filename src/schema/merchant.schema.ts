@@ -36,6 +36,22 @@ export const MerchantSchema = new mongoose.Schema(
       required: true,
       default: Date.now
     },
+    subscriptionPlan: {
+        type: Schema.Types.ObjectId,
+        ref: 'Subscription',
+        required: true,
+    },
+
+    subscriptionEndAt: {
+      required: false,
+      type: Date,
+    },
+
+    subscriptionStartedAt: {
+      required: false,
+      type: Date,
+    },
+
     hasAccess: {
       type: Boolean,
       required: false,

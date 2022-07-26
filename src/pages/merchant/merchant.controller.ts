@@ -25,6 +25,7 @@ import {
   FilterAndPaginationMerchantDto,
   UpdateMerchantDto,
   MerchantSelectFieldDto,
+  UpdateMerchantSubscriptionDto,
 } from '../../dto/merchant.dto';
 import { MongoIdValidationPipe } from '../../pipes/mongo-id-validation.pipe';
 import { AdminJwtAuthGuard } from '../../guards/admin-jwt-auth.guard';
@@ -34,8 +35,10 @@ import { AdminRolesGuard } from '../../guards/admin-roles.guard';
 import { AdminMetaPermissions } from '../../decorator/admin-permissions.decorator';
 import { AdminPermissions } from '../../enum/admin-permission.enum';
 import { AdminPermissionGuard } from '../../guards/admin-permission.guard';
-import { PASSPORT_USER_TOKEN_TYPE } from '../../core/global-variables';
+import { PASSPORT_MERCHANT_TOKEN_TYPE } from '../../core/global-variables';
 import { ChangePasswordDto } from '../../dto/change-password.dto';
+import { MerchantJwtAuthGuard } from 'src/guards/merchant-jwt-auth.guard';
+import { GetTokenUser } from 'src/decorator/get-token-user.decorator';
 
 @Controller('merchant')
 export class MerchantController {
@@ -83,7 +86,7 @@ export class MerchantController {
 
   @Version(VERSION_NEUTRAL)
   @Get('/logged-in-merchant-data')
-  @UseGuards(AuthGuard(PASSPORT_USER_TOKEN_TYPE))
+  @UseGuards(AuthGuard(PASSPORT_MERCHANT_TOKEN_TYPE))
   async getLoggedInMerchantData(
     @Query(ValidationPipe) merchantSelectFieldDto: MerchantSelectFieldDto,
     @GetMerchant() merchant: Merchant,
@@ -93,7 +96,6 @@ export class MerchantController {
 
   @Version(VERSION_NEUTRAL)
   @Post('/get-all')
-  
   // @UsePipes(ValidationPipe)
   // @AdminMetaRoles(
   //   AdminRoles.SUPER_ADMIN,
@@ -131,7 +133,7 @@ export class MerchantController {
   @Version(VERSION_NEUTRAL)
   @Put('/update-logged-in-merchant')
   @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard(PASSPORT_USER_TOKEN_TYPE))
+  @UseGuards(AuthGuard(PASSPORT_MERCHANT_TOKEN_TYPE))
   async updateLoggedInMerchantInfo(
     @GetMerchant() merchant: Merchant,
     @Body() updateMerchantDto: UpdateMerchantDto,
@@ -140,9 +142,21 @@ export class MerchantController {
   }
 
   @Version(VERSION_NEUTRAL)
+  @Put('/update-logged-in-merchant-subscription')
+  @UseGuards(MerchantJwtAuthGuard)
+  @UsePipes(ValidationPipe)
+  
+  async updateLoggedInMerchantSubscription(
+    @GetTokenUser() merchants: Merchant,
+    @Body() updateMerchantSubscriptionDto: UpdateMerchantSubscriptionDto,
+  ): Promise<ResponsePayload> {
+    return await this.merchantsService.updateLoggedInMerchantSubscription(merchants, updateMerchantSubscriptionDto);
+  }
+
+  @Version(VERSION_NEUTRAL)
   @Put('/change-logged-in-merchant-password')
   @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard(PASSPORT_USER_TOKEN_TYPE))
+  @UseGuards(AuthGuard(PASSPORT_MERCHANT_TOKEN_TYPE))
   async changeLoggedInMerchantPassword(
     @GetMerchant() merchant: Merchant,
     @Body() changePasswordDto: ChangePasswordDto,
@@ -152,6 +166,7 @@ export class MerchantController {
       changePasswordDto,
     );
   }
+
 
   @Version(VERSION_NEUTRAL)
   @Put('/update-data/:id')

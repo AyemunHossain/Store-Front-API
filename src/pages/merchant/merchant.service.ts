@@ -27,10 +27,12 @@ import {
   FilterAndPaginationMerchantDto,
   UpdateMerchantDto,
   MerchantSelectFieldDto,
+  UpdateMerchantSubscriptionDto,
 } from '../../dto/merchant.dto';
 import { AdminAuthResponse } from '../../interfaces/admin.interface';
 import { ChangePasswordDto } from '../../dto/change-password.dto';
 import { Cache } from 'cache-manager';
+import { Subscription } from 'src/interfaces/subscription.interface';
 
 const ObjectId = Types.ObjectId;
 
@@ -43,10 +45,11 @@ export class MerchantService {
 
   constructor(
     @InjectModel('Merchant') private readonly merchantModel: Model<Merchant>,
+    @InjectModel('Subscription') private readonly subscriptionModel: Model<Subscription>,
     protected jwtService: JwtService,
     private configService: ConfigService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  ) { }
 
   /**
    * Merchant Signup
@@ -60,7 +63,7 @@ export class MerchantService {
 
     const mData = { ...createMerchantDto, ...{ password: hashedPass } };
     const newMerchant = new this.merchantModel(mData);
-    
+
     try {
       const saveData = await newMerchant.save();
       console.log(saveData)
@@ -88,7 +91,7 @@ export class MerchantService {
   async merchantLogin(authMerchantDto: AuthMerchantDto): Promise<MerchantAuthResponse> {
     try {
       const merchant = (await this.merchantModel
-        .findOne({ merchantname: authMerchantDto.username})
+        .findOne({ merchantname: authMerchantDto.username })
         .select('password merchantname hasAccess')) as Merchant;
 
       if (!merchant) {
@@ -209,7 +212,6 @@ export class MerchantService {
     const { pagination } = filterMerchantDto;
     const { sort } = filterMerchantDto;
     const { select } = filterMerchantDto;
-    console.log("_-----------------------------------------------------",filterMerchantDto,searchQuery)
     /*** GET FROM CACHE ***/
     if (!pagination && !filter) {
       const cacheData: any[] = await this.cacheManager.get(this.cacheAllData);
@@ -444,6 +446,35 @@ export class MerchantService {
       throw new InternalServerErrorException();
     }
   }
+
+
+  async updateLoggedInMerchantSubscription(
+    merchants: Merchant,
+    updateMerchantSubscriptionDto: UpdateMerchantSubscriptionDto,
+  ): Promise<ResponsePayload> {
+
+    const { subscriptionPlan } = updateMerchantSubscriptionDto;
+
+    const merchant = await this.merchantModel.findOne()
+
+    const subsPlan = await this.subscriptionModel.findById(subscriptionPlan)
+
+    try {
+
+      await this.merchantModel.findByIdAndUpdate(merchant._id, {
+        $set: { subscriptionPlan: updateMerchantSubscriptionDto.subscriptionPlan, subscriptionStartedAt: new Date(), subscriptionEndAt: new Date(+new Date() + (subsPlan.days) * 24 * 60 * 60 * 1000) },
+      });
+
+      return {
+        success: true,
+        message: 'Success',
+      } as ResponsePayload;
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+
 
   async changeLoggedInMerchantPassword(
     merchants: Merchant,
